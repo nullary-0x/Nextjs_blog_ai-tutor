@@ -1,44 +1,17 @@
-// import { createServerClient, type CookieOptions } from '@supabase/ssr';
-// import { cookies } from 'next/headers';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
-// export function createClient() {
-//   const cookieStore = cookies();
+// =================================================================
+// NOTE: Phase 1 完了のための一時的なシンプルクライアント
+//
+// 認証(Cookie)処理に起因するエラーを回避するため、
+// Phase 2で必要になるまで、認証機能を完全に無効化します。
+// これにより、まずは公開記事の読み取り機能(Phase 1)を完成させます。
+// =================================================================
 
-//   // Define environment variables for Supabase connection
-//   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-//   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-//   // Create and export the Supabase client for server-side usage
-//   return createServerClient(supabaseUrl, supabaseAnonKey, {
-//     cookies: {
-//       get(name: string) {
-//         return cookieStore.get(name)?.value;
-//       },
-//       set(name: string, value: string, options: CookieOptions) {
-//         try {
-//           // The official Supabase SSR code example can cause a TypeScript error
-//           // because the `cookies()` function from `next/headers` returns a
-//           // `ReadonlyRequestCookies` object, which doesn't have a `set` method.
-//           // The try/catch block is intended to handle runtime errors when
-//           // called from a Server Component. To fix the TypeScript error,
-//           // we can cast cookieStore to `any`.
-//           (cookieStore as any).set({ name, value, ...options });
-//         } catch (error) {
-//           // The `set` method was called from a Server Component.
-//           // This can be ignored if you have middleware refreshing
-//           // user sessions.
-//         }
-//       },
-//       remove(name: string, options: CookieOptions) {
-//         try {
-//           // Same as above for the remove method.
-//           (cookieStore as any).set({ name, value: '', ...options });
-//         } catch (error) {
-//           // The `delete` method was called from a Server Component.
-//           // This can be ignored if you have middleware refreshing
-//           // user sessions.
-//         }
-//       },
-//     },
-//   });
-// }
+export function createClient() {
+  // サーバーサイドで安全にデータを読み取るためだけのクライアントを作成
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
