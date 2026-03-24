@@ -6,14 +6,14 @@ import Image from 'next/image'
 // ビルド時にNext.jsにどのページを生成すべきか教える関数
 export async function generateStaticParams() {
   const supabase = createClient()
-  const { data: posts } = await supabase.from('posts').select('slug')
+  // 公開されている記事のslugのみを取得
+  const { data: posts } = await supabase.from('posts').select('slug').eq('published', true)
 
   if (!posts) {
     return []
   }
 
   // Supabaseから取得したslugのリストをNext.jsに渡す
-  //例: [ { slug: 'first-post' }, { slug: 'second-post' } ]
   return posts.map((post) => ({
     slug: post.slug,
   }))
@@ -24,11 +24,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
   const supabase = createClient()
   const { slug } = params
 
-  // URLのslugに基づいて、Supabaseから特定の記事データを1件取得
+  // URLのslugに基づいて、公開されている特定の記事データを1件取得
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
     .eq('slug', slug)
+    .eq('published', true) // 公開されている記事のみ
     .single()
 
   // 記事が見つからなければ404ページを表示

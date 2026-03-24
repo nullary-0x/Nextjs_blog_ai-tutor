@@ -9,6 +9,7 @@ export default async function Home() {
   const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
+    .eq('published', true) // 公開された記事のみ取得
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -16,7 +17,7 @@ export default async function Home() {
   }
 
   if (!posts || posts.length === 0) {
-    return <p className="text-center text-gray-500">投稿がまだありません。</p>
+    return <p className="text-center text-gray-500">公開された投稿がまだありません。</p>
   }
 
   return (
