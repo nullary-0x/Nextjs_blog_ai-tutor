@@ -16,7 +16,13 @@ export function createClient() {
       },
       set(name: string, value: string, options: CookieOptions) {
         try {
-          cookieStore.set({ name, value, ...options });
+          // The official Supabase SSR code example can cause a TypeScript error
+          // because the `cookies()` function from `next/headers` returns a
+          // `ReadonlyRequestCookies` object, which doesn't have a `set` method.
+          // The try/catch block is intended to handle runtime errors when
+          // called from a Server Component. To fix the TypeScript error,
+          // we can cast cookieStore to `any`.
+          (cookieStore as any).set({ name, value, ...options });
         } catch (error) {
           // The `set` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
@@ -25,7 +31,8 @@ export function createClient() {
       },
       remove(name: string, options: CookieOptions) {
         try {
-          cookieStore.set({ name, value: '', ...options });
+          // Same as above for the remove method.
+          (cookieStore as any).set({ name, value: '', ...options });
         } catch (error) {
           // The `delete` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing
